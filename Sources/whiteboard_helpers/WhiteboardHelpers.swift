@@ -1,8 +1,8 @@
 /*
- * CreatorHelpers.swift 
- * classgenerator 
+ * WhiteboardHelpers.swift 
+ * whiteboard_helpers
  *
- * Created by Callum McColl on 15/08/2017.
+ * Created by Callum McColl on 04/01/2018.
  * Copyright © 2017 Callum McColl. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@
 
 import Foundation
 
-public final class CreatorHelpers {
+public final class WhiteboardHelpers {
 
     fileprivate let helpers: StringHelpers
 
