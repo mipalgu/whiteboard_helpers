@@ -63,7 +63,6 @@ public final class WhiteboardHelpers {
     fileprivate let helpers: StringHelpers
 
     public init(helpers: StringHelpers = StringHelpers()) {
-        self.date = date
         self.helpers = helpers
     }
 
