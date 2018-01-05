@@ -58,6 +58,8 @@
 
 import Foundation
 
+import swift_helpers
+
 public final class WhiteboardHelpers {
 
     fileprivate let helpers: StringHelpers
