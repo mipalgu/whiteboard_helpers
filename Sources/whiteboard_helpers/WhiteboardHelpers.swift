@@ -96,4 +96,12 @@ public final class WhiteboardHelpers {
         }))
     }
 
+    public func createDescriptionBufferSizeDef(forClassNamed className: String) -> String {
+        return className.uppercased() + "_DESC_BUFFER_SIZE"
+    }
+
+    public func createToStringBufferSizeDef(forClassNamed className: String) -> String {
+        return className.uppercased() + "_TO_STRING_BUFFER_SIZE"
+    }
+
 }
