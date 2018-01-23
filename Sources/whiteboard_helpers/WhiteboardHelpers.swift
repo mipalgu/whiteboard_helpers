@@ -93,7 +93,15 @@ public final class WhiteboardHelpers {
     public func createStructName(forClassNamed className: String) -> String {
         return "wb_" + self.helpers.toSnakeCase(String(className.lazy.map {
             self.helpers.isAlphaNumeric($0) ? $0 : "_"
-        }))
+        })).lowercased()
+    }
+
+    public func createDescriptionBufferSizeDef(forClassNamed className: String) -> String {
+        return className.uppercased() + "_DESC_BUFFER_SIZE"
+    }
+
+    public func createToStringBufferSizeDef(forClassNamed className: String) -> String {
+        return className.uppercased() + "_TO_STRING_BUFFER_SIZE"
     }
 
 }
