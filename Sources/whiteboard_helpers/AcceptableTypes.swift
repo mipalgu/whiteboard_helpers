@@ -68,7 +68,8 @@ public struct AcceptableTypes: Codable {
                 "uint64_t",
                 "int64_t",
                 "std::string",
-                "bool"
+                "bool",
+                "std::vector<int>"
                 ]) {
         self.types = types
     }
