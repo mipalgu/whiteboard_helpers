@@ -68,21 +68,25 @@ public final class WhiteboardHelpers {
         self.helpers = helpers
     }
 
-    public func createArrayCountDef(inClass className: String, forVariable label: String, level: Int) -> String {
+    public func createArrayCountDef(inClass className: String, forVariable label: String, level: Int, backwardsCompatible _: Bool = false) -> String {
         let levelStr = 0 == level ? "" : "_\(level)"
         return "\(className.uppercased())_\(label.uppercased())\(levelStr)_ARRAY_SIZE"
     }
 
-    public func createArrayCountDef(inClass className: String) -> (String) -> (Int) -> String {
+    public func createArrayCountDef(inClass className: String, backwardsCompatible: Bool = false) -> (String) -> (Int) -> String {
         //swiftlint:disable:next opening_brace
         return { variable in
             return { level in
-                self.createArrayCountDef(inClass: className, forVariable: variable, level: level)
+                self.createArrayCountDef(inClass: className, forVariable: variable, level: level, backwardsCompatible: backwardsCompatible)
             }
         }
     }
 
-    public func createClassName(forClassNamed className: String) -> String {
+    public func createClassName(forClassNamed className: String, backwardsCompatible: Bool = false) -> String {
+        if true == backwardsCompatible {
+            let split = className.split(separator: "_").lazy.map { String($0) }
+            return split.combine("") { $0 + ($1.first.map { String($0).capitalized } ?? "") + String($1.dropFirst()) }
+        }
         let camel = self.helpers.toCamelCase(className)
         guard let first = camel.first else {
             return ""
@@ -90,17 +94,20 @@ public final class WhiteboardHelpers {
         return String(self.helpers.toUpper(first)) + String(camel.dropFirst())
     }
 
-    public func createStructName(forClassNamed className: String) -> String {
+    public func createStructName(forClassNamed className: String, backwardsCompatible: Bool = false) -> String {
+        if true == backwardsCompatible {
+            return "wb_" + className.lowercased()
+        }
         return "wb_" + self.helpers.toSnakeCase(String(className.lazy.map {
             self.helpers.isAlphaNumeric($0) ? $0 : "_"
         })).lowercased()
     }
 
-    public func createDescriptionBufferSizeDef(forClassNamed className: String) -> String {
+    public func createDescriptionBufferSizeDef(forClassNamed className: String, backwardsCompatible _: Bool = false) -> String {
         return className.uppercased() + "_DESC_BUFFER_SIZE"
     }
 
-    public func createToStringBufferSizeDef(forClassNamed className: String) -> String {
+    public func createToStringBufferSizeDef(forClassNamed className: String, backwardsCompatible _: Bool = false) -> String {
         return className.uppercased() + "_TO_STRING_BUFFER_SIZE"
     }
 
