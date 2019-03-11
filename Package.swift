@@ -16,6 +16,9 @@ let package = Package(
     targets: [
         .target(
             name: "whiteboard_helpers",
-            dependencies: ["swift_helpers"])
+            dependencies: ["swift_helpers"]),
+        .testTarget(
+            name: "whiteboard_helpersTests",
+            dependencies: ["whiteboard_helpers"])
     ]
 )
