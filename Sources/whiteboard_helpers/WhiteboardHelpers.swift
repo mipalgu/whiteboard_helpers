@@ -93,6 +93,10 @@ public final class WhiteboardHelpers {
         }
         return String(self.helpers.toUpper(first)) + String(camel.dropFirst())
     }
+    
+    public func createDefName(forClassNamed className: String, backwardsCompatiable: Bool = false) -> String {
+        return className.uppercased()
+    }
 
     public func createStructName(forClassNamed className: String, backwardsCompatible: Bool = false) -> String {
         if true == backwardsCompatible {
