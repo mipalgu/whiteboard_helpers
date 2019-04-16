@@ -59,7 +59,7 @@
 public struct AcceptableTypes: Codable {
     public let types: [String]
     public init(types: [String] = [
-                "uint8_t", 
+                "uint8_t",
                 "int8_t",
                 "uint16_t",
                 "int16_t",
@@ -74,4 +74,3 @@ public struct AcceptableTypes: Codable {
         self.types = types
     }
 }
-

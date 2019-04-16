@@ -68,16 +68,22 @@ public final class WhiteboardHelpers {
         self.helpers = helpers
     }
 
+    //swiftlint:disable:next line_length
     public func createArrayCountDef(inClass className: String, forVariable label: String, level: Int, backwardsCompatible _: Bool = false) -> String {
         let levelStr = 0 == level ? "" : "_\(level)"
         return "\(className.uppercased())_\(label.uppercased())\(levelStr)_ARRAY_SIZE"
     }
 
+    //swiftlint:disable:next line_length
     public func createArrayCountDef(inClass className: String, backwardsCompatible: Bool = false) -> (String) -> (Int) -> String {
-        //swiftlint:disable:next opening_brace
         return { variable in
             return { level in
-                self.createArrayCountDef(inClass: className, forVariable: variable, level: level, backwardsCompatible: backwardsCompatible)
+                self.createArrayCountDef(
+                    inClass: className,
+                    forVariable: variable,
+                    level: level,
+                    backwardsCompatible: backwardsCompatible
+                )
             }
         }
     }
@@ -93,7 +99,7 @@ public final class WhiteboardHelpers {
         }
         return String(self.helpers.toUpper(first)) + String(camel.dropFirst())
     }
-    
+
     public func createDefName(forClassNamed className: String, backwardsCompatible: Bool = false) -> String {
         return className.uppercased()
     }
@@ -107,10 +113,12 @@ public final class WhiteboardHelpers {
         })).lowercased()
     }
 
+    //swiftlint:disable:next line_length
     public func createDescriptionBufferSizeDef(forClassNamed className: String, backwardsCompatible _: Bool = false) -> String {
         return className.uppercased() + "_DESC_BUFFER_SIZE"
     }
 
+    //swiftlint:disable:next line_length
     public func createToStringBufferSizeDef(forClassNamed className: String, backwardsCompatible _: Bool = false) -> String {
         return className.uppercased() + "_TO_STRING_BUFFER_SIZE"
     }
