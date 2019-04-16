@@ -64,7 +64,39 @@ public final class WhiteboardHelpersTests: XCTestCase {
 
     public static var allTests: [(String, (WhiteboardHelpersTests) -> () throws -> Void)] {
         return [
+            ("test_point_2D", test_point_2D),
+            ("test_Point_2D_withSpace", test_Point_2D_withSpace),
+            ("test_esp", test_esp)
         ]
+    }
+
+    fileprivate var helpers: WhiteboardHelpers {
+        return WhiteboardHelpers()
+    }
+
+    public func test_point_2D() {
+        let name = "point_2D"
+        XCTAssertEqual("wb_point_2d", self.helpers.createStructName(forClassNamed: name))
+        XCTAssertEqual("Point2D", self.helpers.createClassName(forClassNamed: name))
+        XCTAssertEqual("wb_point_2d", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
+        XCTAssertEqual("point2D", self.helpers.createClassName(forClassNamed: name, backwardsCompatible: true))
+    }
+
+    public func test_Point_2D_withSpace() {
+        let name = "Point_2 D"
+        XCTAssertEqual("wb_point_2_d", self.helpers.createStructName(forClassNamed: name))
+        XCTAssertEqual("Point2D", self.helpers.createClassName(forClassNamed: name))
+        XCTAssertEqual("wb_point_2 d", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
+        XCTAssertEqual("Point2 D", self.helpers.createClassName(forClassNamed: name, backwardsCompatible: true))
+    }
+
+    public func test_esp() {
+        let name = "esp8266_pin_toggle"
+        XCTAssertEqual("wb_esp8266_pin_toggle", self.helpers.createStructName(forClassNamed: name))
+        XCTAssertEqual("Esp8266PinToggle", self.helpers.createClassName(forClassNamed: name))
+        //swiftlint:disable:next line_length
+        XCTAssertEqual("wb_esp8266_pin_toggle", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
+        XCTAssertEqual("esp8266PinToggle", self.helpers.createClassName(forClassNamed: name, backwardsCompatible: true))
     }
 
 }
