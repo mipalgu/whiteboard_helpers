@@ -11,7 +11,8 @@ let package = Package(
             targets: ["whiteboard_helpers"])
     ],
     dependencies: [
-        .package(url: "ssh://git.mipal.net/git/swift_helpers.git", .branch("master"))
+        .package(url: "ssh://git@github.com/mipalgu/swift_helpers.git", .branch("master"))
+        //.package(url: "ssh://git.mipal.net/git/swift_helpers.git", .branch("master"))
     ],
     targets: [
         .target(
