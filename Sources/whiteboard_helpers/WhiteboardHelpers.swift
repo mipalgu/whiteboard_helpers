@@ -61,6 +61,12 @@ import Foundation
 import swift_helpers
 
 public final class WhiteboardHelpers {
+    
+    public enum ParserErrors: Error {
+        
+        case malformedValue(reason: String)
+        
+    }
 
     fileprivate let helpers: StringHelpers
 
@@ -121,6 +127,87 @@ public final class WhiteboardHelpers {
     //swiftlint:disable:next line_length
     public func createToStringBufferSizeDef(forClassNamed className: String, backwardsCompatible _: Bool = false) -> String {
         return className.uppercased() + "_TO_STRING_BUFFER_SIZE"
+    }
+    
+    /**
+     *  Parse a string containing a list of C namespaces separated by '::'.
+     *
+     *  This function is helpful for parsing the namespaces used to namespace
+     *  C struct/functions and the C++ classes used through the whiteboard. The
+     *  global whiteboard has no namespace, however custom whiteboards may
+     *  leverage namespaces to stop conflicting type names between the global
+     *  whiteboard and other custom whiteboards.
+     *
+     *  The String `str` may be formatted in the C++ format, although it is
+     *  recommeded that the c style namespace format be used. In this sense,
+     *  namespaces should be written in lowercase letters separated by
+     *  underscores. To specify separate namespaces separate each namespace
+     *  with '::'. For example:
+     *  ```
+     *  "first_namespace::second_namespace::third_namespace"
+     *  ```
+     *
+     *  - Parameter str: The string containing the C namespaces.
+     *
+     *  - Returns: An array of `CNamespace`s.
+     *
+     *  - Throws: A `WhiteboardHelpers.ParserError` when `str` is malformed.
+     *
+     *  - Complexity: O(n)
+     */
+    public func parseNamespaces(_ str: String) throws -> [CNamespace] {
+        let split = str.split(separator: ":", omittingEmptySubsequences: false)
+        let grouped = split.grouped { $1 == "" }
+        let namespaces = grouped.map { $0.lazy.filter { $0 != "" }.combine("") { $0 + ":" + $1 } }
+        let check: ((Int, Character)) -> Bool = { (tuple: (Int, Character)) -> Bool in
+            !tuple.1.isASCII || (!tuple.1.isLetter && !tuple.1.isNumber && tuple.1 != "_")
+        }
+        if let first = namespaces.first(where: { $0.first! == "_" || $0.last == "_" || nil != $0.enumerated().first(where: check) }) {
+            let index: Int
+            if first.first! == "_" {
+                index = 0
+            } else if first.last! == "_" {
+                index = first.count - 1
+            } else {
+                index = first.enumerated().first(where: check)!.0
+            }
+            let pre = "The namespace list '"
+            let spaces = String(Array<Character>(repeating: " ", count: pre.count + index))
+            throw ParserErrors.malformedValue(reason: pre + str + "' must only contain letters, numbers and underscores separated by '::'    ." + "\n" + spaces + "^" + "\n" + spaces + "|")
+        }
+        return namespaces.map { CNamespace(self.helpers.toSnakeCase(String($0))) }
+    }
+    
+    /**
+     *  Convert a `CPPNamespace` to a `CNamespace`.
+     *
+     *  This function converts a snake case C style namespace, into its
+     *  corresponding camel case C++ representation.
+     *
+     *  - Parameter cppNamespace: The `CPPNamespace` which is being converted.
+     *
+     *  - Returns: The equivalent `CNamespace`.
+     *
+     *  - SeeAlso: `StringHelpers.toSnakeCase(_: String)`.
+     */
+    public func toCNamespace(cppNamespace: CPPNamespace) -> CNamespace {
+        return CNamespace(self.helpers.toSnakeCase(String(cppNamespace)))
+    }
+    
+    /**
+     *  Convert a `CNamespace` to a `CPPNamespace`.
+     *
+     *  This function converts a camel cased C++ style namespace, into its
+     *  corresponding snake cased C style representation.
+     *
+     *  - Parameter cNamespace: The `CNamespace` which is being converted.
+     *
+     *  - Returns: The equivalent `CPPNamespace`.
+     *
+     *  - SeeAlso: `StringHelpers.toCamelCase(_: String)`.
+     */
+    public func toCPPNamespace(cNamespace: CNamespace) -> CPPNamespace {
+        return CPPNamespace(self.helpers.toCamelCase(String(cNamespace)))
     }
 
 }

@@ -66,7 +66,13 @@ public final class WhiteboardHelpersTests: XCTestCase {
         return [
             ("test_point_2D", test_point_2D),
             ("test_Point_2D_withSpace", test_Point_2D_withSpace),
-            ("test_esp", test_esp)
+            ("test_esp", test_esp),
+            ("test_parsesSingleCNamespace", test_parsesSingleCNamespace),
+            ("test_parsesSingleCNamespaceWithUnderscore", test_parsesSingleCNamespaceWithUnderscore),
+            ("test_cannotParseNamespaceBeginningWithUnderscore", test_cannotParseNamespaceBeginningWithUnderscore),
+            ("test_cannotParseNamespaceEndingWithUnderscore", test_cannotParseNamespaceEndingWithUnderscore),
+            ("test_cannotParseNamespaceContainingUnsupportedSymbols", test_cannotParseNamespaceContainingUnsupportedSymbols),
+            ("test_parsesMultipleNamespaces", test_parsesMultipleNamespaces)
         ]
     }
 
@@ -97,6 +103,79 @@ public final class WhiteboardHelpersTests: XCTestCase {
         //swiftlint:disable:next line_length
         XCTAssertEqual("wb_esp8266_pin_toggle", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
         XCTAssertEqual("esp8266PinToggle", self.helpers.createClassName(forClassNamed: name, backwardsCompatible: true))
+    }
+    
+    public func test_parsesSingleCNamespace() {
+        let namespace = "namespace"
+        let result: [CNamespace]
+        do {
+            result = try self.helpers.parseNamespaces(namespace)
+        } catch let e {
+            XCTFail("Unable to parse namespace: \(e).")
+            return
+        }
+        XCTAssertEqual(["namespace"], result)
+    }
+    
+    public func test_parsesSingleCNamespaceWithUnderscore() {
+        let namespace = "first_namespace"
+        let result: [CNamespace]
+        do {
+            result = try self.helpers.parseNamespaces(namespace)
+        } catch let e {
+            XCTFail("Unable to parse namespace: \(e).")
+            return
+        }
+        XCTAssertEqual(["first_namespace"], result)
+    }
+    
+    public func test_cannotParseNamespaceBeginningWithUnderscore() {
+        let namespace = "_namespace"
+        do {
+            _ = try self.helpers.parseNamespaces(namespace)
+        } catch {
+            return
+        }
+        XCTFail("Expected failure to parse namespace beginning with underscore.")
+    }
+    
+    public func test_cannotParseNamespaceEndingWithUnderscore() {
+        let namespace = "namespace_"
+        do {
+            _ = try self.helpers.parseNamespaces(namespace)
+        } catch {
+            return
+        }
+        XCTFail("Expected failure to parse namespace ending with underscore.")
+    }
+    
+    public func test_cannotParseNamespaceContainingUnsupportedSymbols() {
+        let namespace = "namesp!ace"
+        do {
+            _ = try self.helpers.parseNamespaces(namespace)
+        } catch let e as WhiteboardHelpers.ParserErrors {
+            switch e {
+            case .malformedValue:
+                return
+            default:
+                break
+            }
+        } catch {
+            XCTFail("Unexpected error thrown while parsing malformed namespace.")
+        }
+        XCTFail("Expected failure to parse namespace ending with underscore.")
+    }
+    
+    public func test_parsesMultipleNamespaces() {
+        let namespace = "first_namespace::second_namespace"
+        let result: [CNamespace]
+        do {
+            result = try self.helpers.parseNamespaces(namespace)
+        } catch let e {
+            XCTFail("Unable to parse namespace: \(e).")
+            return
+        }
+        XCTAssertEqual(["first_namespace", "second_namespace"], result)
     }
 
 }
