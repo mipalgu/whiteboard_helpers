@@ -133,8 +133,14 @@ public final class WhiteboardHelpersTests: XCTestCase {
         let namespace = "_namespace"
         do {
             _ = try self.helpers.parseNamespaces(namespace)
+        } catch let e as WhiteboardHelpers.ParserErrors {
+            switch e {
+            case .malformedValue(let reason):
+                self.checkErrorMessage(reason, offendingCharacter: "_")
+                return
+            }
         } catch {
-            return
+            XCTFail("Unexpected error thrown while parsing malformed namespace.")
         }
         XCTFail("Expected failure to parse namespace beginning with underscore.")
     }
@@ -143,8 +149,14 @@ public final class WhiteboardHelpersTests: XCTestCase {
         let namespace = "namespace_"
         do {
             _ = try self.helpers.parseNamespaces(namespace)
+        } catch let e as WhiteboardHelpers.ParserErrors {
+            switch e {
+            case .malformedValue(let reason):
+                self.checkErrorMessage(reason, offendingCharacter: "_")
+                return
+            }
         } catch {
-            return
+            XCTFail("Unexpected error thrown while parsing malformed namespace.")
         }
         XCTFail("Expected failure to parse namespace ending with underscore.")
     }
@@ -158,8 +170,6 @@ public final class WhiteboardHelpersTests: XCTestCase {
             case .malformedValue(let reason):
                 self.checkErrorMessage(reason, offendingCharacter: "!")
                 return
-            default:
-                break
             }
         } catch {
             XCTFail("Unexpected error thrown while parsing malformed namespace.")
