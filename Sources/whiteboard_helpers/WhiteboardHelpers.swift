@@ -162,18 +162,25 @@ public final class WhiteboardHelpers {
         let check: ((Int, Character)) -> Bool = { (tuple: (Int, Character)) -> Bool in
             !tuple.1.isASCII || (!tuple.1.isLetter && !tuple.1.isNumber && tuple.1 != "_")
         }
-        if let first = namespaces.first(where: { $0.first! == "_" || $0.last == "_" || nil != $0.enumerated().first(where: check) }) {
-            let index: Int
-            if first.first! == "_" {
-                index = 0
-            } else if first.last! == "_" {
-                index = first.count - 1
-            } else {
-                index = first.enumerated().first(where: check)!.0
+        let tuple: (Int, String.SubSequence)? = namespaces.reduce(nil) {
+            if nil != $0 {
+                return $0
             }
+            if $1.first! == "_" {
+                return (0, $1)
+            }
+            if $1.last! == "_" {
+                return ($1.count - 1, $1)
+            }
+            if let (firstIndex, _) = $1.enumerated().first(where: check) {
+                return (firstIndex, $1)
+            }
+            return $0
+        }
+        if let (index, errorStr) = tuple {
             let pre = "The namespace list '"
             let spaces = String(Array<Character>(repeating: " ", count: pre.count + index))
-            throw ParserErrors.malformedValue(reason: pre + str + "' must only contain letters, numbers and underscores separated by '::'    ." + "\n" + spaces + "^" + "\n" + spaces + "|")
+            throw ParserErrors.malformedValue(reason: pre + errorStr + "' must only contain letters, numbers and underscores separated by '::'." + "\n" + spaces + "^" + "\n" + spaces + "|")
         }
         return namespaces.map { CNamespace(self.helpers.toSnakeCase(String($0))) }
     }

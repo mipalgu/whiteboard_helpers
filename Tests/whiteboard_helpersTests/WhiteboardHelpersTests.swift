@@ -155,7 +155,8 @@ public final class WhiteboardHelpersTests: XCTestCase {
             _ = try self.helpers.parseNamespaces(namespace)
         } catch let e as WhiteboardHelpers.ParserErrors {
             switch e {
-            case .malformedValue:
+            case .malformedValue(let reason):
+                self.checkErrorMessage(reason, offendingCharacter: "!")
                 return
             default:
                 break
@@ -176,6 +177,21 @@ public final class WhiteboardHelpersTests: XCTestCase {
             return
         }
         XCTAssertEqual(["first_namespace", "second_namespace"], result)
+    }
+    
+    fileprivate func checkErrorMessage(_ errorMessage: String, offendingCharacter: Character) {
+        let split = errorMessage.split(separator: "\n")
+        guard
+            let (index, _) = errorMessage.enumerated().first(where: { $0.element == offendingCharacter }),
+            let secondLastLine = split.dropLast().last,
+            let lastLine = split.last
+        else {
+            XCTFail("Malformed error message: \(errorMessage).")
+            return
+        }
+        let spaces = String(Array(repeating: " ", count: index))
+        XCTAssertEqual(secondLastLine, spaces + "^")
+        XCTAssertEqual(lastLine, spaces + "|")
     }
 
 }
