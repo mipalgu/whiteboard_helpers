@@ -156,13 +156,11 @@ public final class WhiteboardHelpers {
      *  - Complexity: O(n)
      */
     public func parseNamespaces(_ str: String) throws -> [CNamespace] {
-        let split = str.split(separator: ":", omittingEmptySubsequences: false)
-        let grouped = split.grouped { $1 == "" }
-        let namespaces = grouped.map { $0.lazy.filter { $0 != "" }.combine("") { $0 + ":" + $1 } }
+        let namespaces = str.components(separatedBy: "::")
         let check: ((Int, Character)) -> Bool = { (tuple: (Int, Character)) -> Bool in
             !tuple.1.isASCII || (!tuple.1.isLetter && !tuple.1.isNumber && tuple.1 != "_")
         }
-        let tuple: (Int, String.SubSequence)? = namespaces.reduce(nil) {
+        let tuple: (Int, String)? = namespaces.reduce(nil) {
             if nil != $0 {
                 return $0
             }
