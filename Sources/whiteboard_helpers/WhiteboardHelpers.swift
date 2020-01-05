@@ -61,11 +61,11 @@ import Foundation
 import swift_helpers
 
 public final class WhiteboardHelpers {
-    
+
     public enum ParserErrors: Error {
-        
+
         case malformedValue(reason: String)
-        
+
     }
 
     fileprivate let helpers: StringHelpers
@@ -134,7 +134,7 @@ public final class WhiteboardHelpers {
         let defName = self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
         return defName + "_TO_STRING_BUFFER_SIZE"
     }
-    
+
     /**
      *  Parse a string containing a list of C namespaces separated by '::'.
      *
@@ -188,7 +188,7 @@ public final class WhiteboardHelpers {
         }
         return namespaces.map { CNamespace(self.helpers.toSnakeCase(String($0))) }
     }
-    
+
     /**
      *  Convert a `CPPNamespace` to a `CNamespace`.
      *
@@ -204,7 +204,7 @@ public final class WhiteboardHelpers {
     public func toCNamespace(cppNamespace: CPPNamespace) -> CNamespace {
         return CNamespace(self.helpers.toSnakeCase(String(cppNamespace)))
     }
-    
+
     /**
      *  Convert a `CNamespace` to a `CPPNamespace`.
      *
