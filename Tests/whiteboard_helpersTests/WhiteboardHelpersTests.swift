@@ -72,7 +72,32 @@ public final class WhiteboardHelpersTests: XCTestCase {
             ("test_cannotParseNamespaceBeginningWithUnderscore", test_cannotParseNamespaceBeginningWithUnderscore),
             ("test_cannotParseNamespaceEndingWithUnderscore", test_cannotParseNamespaceEndingWithUnderscore),
             ("test_cannotParseNamespaceContainingUnsupportedSymbols", test_cannotParseNamespaceContainingUnsupportedSymbols),
-            ("test_parsesMultipleNamespaces", test_parsesMultipleNamespaces)
+            ("test_parsesMultipleNamespaces", test_parsesMultipleNamespaces),
+            ("test_createDefNameOnCName", test_createDefNameOnCName),
+            ("test_createDefNameWorksWithNumbers", test_createDefNameWorksWithNumbers),
+            ("test_createArrayCountDef", test_createArrayCountDef),
+            ("test_createArrayCountDefWithLevel", test_createArrayCountDefWithLevel),
+            ("test_createArrayCountDefWithBackwardsCompatibility", test_createArrayCountDefWithBackwardsCompatibility),
+            ("test_createClassName", test_createClassName),
+            ("test_createClassNameWithNumbers", test_createClassNameWithNumbers),
+            ("test_createClassNameWithNumbersWithoutUnderscores", test_createClassNameWithNumbersWithoutUnderscores),
+            ("test_createClassNameWithCamelCase", test_createClassNameWithCamelCase),
+            ("test_createClassNameWithBackwardsCompatibility", test_createClassNameWithBackwardsCompatibility),
+            ("test_createClassNameWithNumbersWithBackwardsCompatibility", test_createClassNameWithNumbersWithBackwardsCompatibility),
+            ("test_createClassNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility", test_createClassNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility),
+            ("test_createClassNameWithCamelCaseWithBackwardsCompatibility", test_createClassNameWithCamelCaseWithBackwardsCompatibility),
+            ("test_createStructName", test_createStructName),
+            ("test_createStructNameWithNumbers", test_createStructNameWithNumbers),
+            ("test_createStructNameWithNumbersWithoutUnderscores", test_createStructNameWithNumbersWithoutUnderscores),
+            ("test_createStructNameWithCamelCase", test_createStructNameWithCamelCase),
+            ("test_createStructNameWithBackwardsCompatibility", test_createStructNameWithBackwardsCompatibility),
+            ("test_createStructNameWithNumbersWithBackwardsCompatibility", test_createStructNameWithNumbersWithBackwardsCompatibility),
+            ("test_createStructNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility", test_createStructNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility),
+            ("test_createStructNameWithCamelCaseWithBackwardsCompatibility", test_createStructNameWithCamelCaseWithBackwardsCompatibility),
+            ("test_createDescriptionBufferSizeDef", test_createDescriptionBufferSizeDef),
+            ("test_createDescriptionBufferSizeDefWithBackwardsCompatibility", test_createDescriptionBufferSizeDefWithBackwardsCompatibility),
+            ("test_createToStringBufferSizeDef", test_createToStringBufferSizeDef),
+            ("test_createToStringBufferSizeDefWithBackwardsCompatibility", test_createToStringBufferSizeDefWithBackwardsCompatibility)
         ]
     }
 
@@ -202,6 +227,173 @@ public final class WhiteboardHelpersTests: XCTestCase {
         let spaces = String(Array(repeating: " ", count: index))
         XCTAssertEqual(secondLastLine, spaces + "^")
         XCTAssertEqual(lastLine, spaces + "|")
+    }
+    
+    public func test_createDefNameOnCName() {
+        let name = "some_class"
+        let result = self.helpers.createDefName(forClassNamed: name)
+        XCTAssertEqual("SOME_CLASS", result)
+    }
+    
+    public func test_createDefNameWorksWithNumbers() {
+        let name = "some_1_class2_3"
+        let result = self.helpers.createDefName(forClassNamed: name)
+        XCTAssertEqual("SOME_1_CLASS2_3", result)
+    }
+    
+    public func test_createArrayCountDef() {
+        let classname = "some_class"
+        let variable = "variable"
+        let result = self.helpers.createArrayCountDef(inClass: classname, forVariable: variable, level: 0, backwardsCompatible: false)
+        XCTAssertEqual("SOME_CLASS_VARIABLE_ARRAY_SIZE", result)
+    }
+    
+    public func test_createArrayCountDefWithLevel() {
+        let classname = "some_class"
+        let variable = "variable"
+        let level = 3
+        let result = self.helpers.createArrayCountDef(inClass: classname, forVariable: variable, level: level, backwardsCompatible: false)
+        XCTAssertEqual("SOME_CLASS_VARIABLE_3_ARRAY_SIZE", result)
+    }
+    
+    public func test_createArrayCountDefWithBackwardsCompatibility() {
+        let classname = "some_class"
+        let variable = "variable"
+        let level = 3
+        let result = self.helpers.createArrayCountDef(inClass: classname, forVariable: variable, level: level, backwardsCompatible: true)
+        XCTAssertEqual("SOME_CLASS_VARIABLE_3_ARRAY_SIZE", result)
+    }
+    
+    public func test_createClassName() {
+        let classname = "some_class"
+        let result = self.helpers.createClassName(forClassNamed: classname, backwardsCompatible: false)
+        XCTAssertEqual("SomeClass", result)
+    }
+    
+    public func test_createClassNameWithNumbers() {
+        let classname = "some23_class1"
+        let result = self.helpers.createClassName(forClassNamed: classname, backwardsCompatible: false)
+        XCTAssertEqual("Some23Class1", result)
+    }
+    
+    public func test_createClassNameWithNumbersWithoutUnderscores() {
+        let classname = "some23class1"
+        let result = self.helpers.createClassName(forClassNamed: classname, backwardsCompatible: false)
+        XCTAssertEqual("Some23class1", result)
+    }
+    
+    public func test_createClassNameWithCamelCase() {
+        let classname = "some_ClassName"
+        let result = self.helpers.createClassName(forClassNamed: classname, backwardsCompatible: false)
+        XCTAssertEqual("SomeClassName", result)
+    }
+    
+    public func test_createClassNameWithBackwardsCompatibility() {
+        let classname = "some_class"
+        let result = self.helpers.createClassName(forClassNamed: classname, backwardsCompatible: true)
+        XCTAssertEqual("someClass", result)
+    }
+    
+    public func test_createClassNameWithNumbersWithBackwardsCompatibility() {
+        let classname = "some23_class1"
+        let result = self.helpers.createClassName(forClassNamed: classname, backwardsCompatible: true)
+        XCTAssertEqual("some23Class1", result)
+    }
+    
+    public func test_createClassNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility() {
+        let classname = "some23class1"
+        let result = self.helpers.createClassName(forClassNamed: classname, backwardsCompatible: true)
+        XCTAssertEqual("some23class1", result)
+    }
+    
+    public func test_createClassNameWithCamelCaseWithBackwardsCompatibility() {
+        let classname = "some_ClassName"
+        let result = self.helpers.createClassName(forClassNamed: classname, backwardsCompatible: true)
+        XCTAssertEqual("someClassName", result)
+    }
+    
+    public func test_createStructName() {
+        let classname = "some_class"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
+        XCTAssertEqual("wb_some_class", result)
+    }
+    
+    public func test_createStructNameWithNumbers() {
+        let classname = "some23_class1"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
+        XCTAssertEqual("wb_some23_class1", result)
+    }
+    
+    public func test_createStructNameWithNumbersWithoutUnderscores() {
+        let classname = "some23class1"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
+        XCTAssertEqual("wb_some23class1", result)
+    }
+    
+    public func test_createStructNameWithCamelCase() {
+        let classname = "some_ClassName"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
+        XCTAssertEqual("wb_some_class_name", result)
+    }
+    
+    public func test_createStructNameWithBackwardsCompatibility() {
+        let classname = "some_class"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
+        XCTAssertEqual("wb_some_class", result)
+    }
+    
+    public func test_createStructNameWithNumbersWithBackwardsCompatibility() {
+        let classname = "some23_class1"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
+        XCTAssertEqual("wb_some23_class1", result)
+    }
+    
+    public func test_createStructNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility() {
+        let classname = "some23class1"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
+        XCTAssertEqual("wb_some23class1", result)
+    }
+    
+    public func test_createStructNameWithCamelCaseWithBackwardsCompatibility() {
+        let classname = "some_ClassName"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
+        XCTAssertEqual("wb_some_classname", result)
+    }
+    
+    public func test_createDescriptionBufferSizeDef() {
+        let classnames = ["some_class", "some23class1", "some23class1", "some_ClassName"]
+        for classname in classnames {
+            let def = self.helpers.createDefName(forClassNamed: classname, backwardsCompatible: false)
+            let result = self.helpers.createDescriptionBufferSizeDef(forClassNamed: classname, backwardsCompatible: false)
+            XCTAssertEqual(def + "_DESC_BUFFER_SIZE", result)
+        }
+    }
+    
+    public func test_createDescriptionBufferSizeDefWithBackwardsCompatibility() {
+        let classnames = ["some_class", "some23class1", "some23class1", "some_ClassName"]
+        for classname in classnames {
+            let def = self.helpers.createDefName(forClassNamed: classname, backwardsCompatible: true)
+            let result = self.helpers.createDescriptionBufferSizeDef(forClassNamed: classname, backwardsCompatible: true)
+            XCTAssertEqual(def + "_DESC_BUFFER_SIZE", result)
+        }
+    }
+    
+    public func test_createToStringBufferSizeDef() {
+        let classnames = ["some_class", "some23class1", "some23class1", "some_ClassName"]
+        for classname in classnames {
+            let def = self.helpers.createDefName(forClassNamed: classname, backwardsCompatible: false)
+            let result = self.helpers.createToStringBufferSizeDef(forClassNamed: classname, backwardsCompatible: false)
+            XCTAssertEqual(def + "_TO_STRING_BUFFER_SIZE", result)
+        }
+    }
+    
+    public func test_createToStringBufferSizeDefWithBackwardsCompatibility() {
+        let classnames = ["some_class", "some23class1", "some23class1", "some_ClassName"]
+        for classname in classnames {
+            let def = self.helpers.createDefName(forClassNamed: classname, backwardsCompatible: true)
+            let result = self.helpers.createToStringBufferSizeDef(forClassNamed: classname, backwardsCompatible: true)
+            XCTAssertEqual(def + "_TO_STRING_BUFFER_SIZE", result)
+        }
     }
 
 }
