@@ -75,20 +75,22 @@ public final class WhiteboardHelpers {
     }
 
     //swiftlint:disable:next line_length
-    public func createArrayCountDef(inClass className: String, forVariable label: String, level: Int, backwardsCompatible _: Bool = false) -> String {
+    public func createArrayCountDef(inClass className: String, forVariable label: String, level: Int, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
         let levelStr = 0 == level ? "" : "_\(level)"
-        return "\(className.uppercased())_\(label.uppercased())\(levelStr)_ARRAY_SIZE"
+        let def = self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
+        return "\(def)_\(label.uppercased())\(levelStr)_ARRAY_SIZE"
     }
 
     //swiftlint:disable:next line_length
-    public func createArrayCountDef(inClass className: String, backwardsCompatible: Bool = false) -> (String) -> (Int) -> String {
+    public func createArrayCountDef(inClass className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> (String) -> (Int) -> String {
         return { variable in
             return { level in
                 self.createArrayCountDef(
                     inClass: className,
                     forVariable: variable,
                     level: level,
-                    backwardsCompatible: backwardsCompatible
+                    backwardsCompatible: backwardsCompatible,
+                    namespaces: namespaces
                 )
             }
         }
@@ -106,27 +108,31 @@ public final class WhiteboardHelpers {
         return String(self.helpers.toUpper(first)) + String(camel.dropFirst())
     }
 
-    public func createDefName(forClassNamed className: String, backwardsCompatible: Bool = false) -> String {
-        return className.uppercased()
+    public func createDefName(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
+        let namespace = namespaces?.reduce("") { $0 + $1 + "_" } ?? ""
+        return namespace.uppercased() + className.uppercased()
     }
 
-    public func createStructName(forClassNamed className: String, backwardsCompatible: Bool = false) -> String {
+    public func createStructName(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
+        let namespace = namespaces?.reduce("") { $0 + $1 + "_" } ?? ""
         if true == backwardsCompatible {
-            return "wb_" + className.lowercased()
+            return "wb_" + namespace + className.lowercased()
         }
-        return "wb_" + self.helpers.toSnakeCase(String(className.lazy.map {
+        return "wb_" + namespace + self.helpers.toSnakeCase(String(className.lazy.map {
             self.helpers.isAlphaNumeric($0) ? $0 : "_"
         })).lowercased()
     }
 
     //swiftlint:disable:next line_length
-    public func createDescriptionBufferSizeDef(forClassNamed className: String, backwardsCompatible _: Bool = false) -> String {
-        return className.uppercased() + "_DESC_BUFFER_SIZE"
+    public func createDescriptionBufferSizeDef(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
+        let defName = self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
+        return defName + "_DESC_BUFFER_SIZE"
     }
 
     //swiftlint:disable:next line_length
-    public func createToStringBufferSizeDef(forClassNamed className: String, backwardsCompatible _: Bool = false) -> String {
-        return className.uppercased() + "_TO_STRING_BUFFER_SIZE"
+    public func createToStringBufferSizeDef(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
+        let defName = self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
+        return defName + "_TO_STRING_BUFFER_SIZE"
     }
     
     /**

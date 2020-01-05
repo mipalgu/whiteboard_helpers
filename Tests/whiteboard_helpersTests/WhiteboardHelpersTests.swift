@@ -75,9 +75,12 @@ public final class WhiteboardHelpersTests: XCTestCase {
             ("test_parsesMultipleNamespaces", test_parsesMultipleNamespaces),
             ("test_createDefNameOnCName", test_createDefNameOnCName),
             ("test_createDefNameWorksWithNumbers", test_createDefNameWorksWithNumbers),
+            ("test_createDefNameWorksWithNamespaces", test_createDefNameWorksWithNamespaces),
             ("test_createArrayCountDef", test_createArrayCountDef),
             ("test_createArrayCountDefWithLevel", test_createArrayCountDefWithLevel),
+            ("test_createArrayCountDefWorksWithNamespaces", test_createArrayCountDefWorksWithNamespaces),
             ("test_createArrayCountDefWithBackwardsCompatibility", test_createArrayCountDefWithBackwardsCompatibility),
+            ("test_createArrayCountDefWorksWithNamespacesWithBackwardsCompatibility", test_createArrayCountDefWorksWithNamespacesWithBackwardsCompatibility),
             ("test_createClassName", test_createClassName),
             ("test_createClassNameWithNumbers", test_createClassNameWithNumbers),
             ("test_createClassNameWithNumbersWithoutUnderscores", test_createClassNameWithNumbersWithoutUnderscores),
@@ -87,10 +90,12 @@ public final class WhiteboardHelpersTests: XCTestCase {
             ("test_createClassNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility", test_createClassNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility),
             ("test_createClassNameWithCamelCaseWithBackwardsCompatibility", test_createClassNameWithCamelCaseWithBackwardsCompatibility),
             ("test_createStructName", test_createStructName),
+            ("test_createStructNameWithNamespaces", test_createStructNameWithNamespaces),
             ("test_createStructNameWithNumbers", test_createStructNameWithNumbers),
             ("test_createStructNameWithNumbersWithoutUnderscores", test_createStructNameWithNumbersWithoutUnderscores),
             ("test_createStructNameWithCamelCase", test_createStructNameWithCamelCase),
             ("test_createStructNameWithBackwardsCompatibility", test_createStructNameWithBackwardsCompatibility),
+            ("test_createStructNameWithNamespacesWithBackwardsCompatibilty", test_createStructNameWithNamespacesWithBackwardsCompatibilty),
             ("test_createStructNameWithNumbersWithBackwardsCompatibility", test_createStructNameWithNumbersWithBackwardsCompatibility),
             ("test_createStructNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility", test_createStructNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility),
             ("test_createStructNameWithCamelCaseWithBackwardsCompatibility", test_createStructNameWithCamelCaseWithBackwardsCompatibility),
@@ -241,6 +246,13 @@ public final class WhiteboardHelpersTests: XCTestCase {
         XCTAssertEqual("SOME_1_CLASS2_3", result)
     }
     
+    public func test_createDefNameWorksWithNamespaces() {
+        let namespaces: [CNamespace] = ["first_namespace", "second_namespace", "third_namespace"]
+        let classname = "some_class"
+        let result = self.helpers.createDefName(forClassNamed: classname, namespaces: namespaces)
+        XCTAssertEqual("FIRST_NAMESPACE_SECOND_NAMESPACE_THIRD_NAMESPACE_SOME_CLASS", result)
+    }
+    
     public func test_createArrayCountDef() {
         let classname = "some_class"
         let variable = "variable"
@@ -256,12 +268,30 @@ public final class WhiteboardHelpersTests: XCTestCase {
         XCTAssertEqual("SOME_CLASS_VARIABLE_3_ARRAY_SIZE", result)
     }
     
+    public func test_createArrayCountDefWorksWithNamespaces() {
+        let namespaces: [CNamespace] = ["first_namespace", "second_namespace", "third_namespace"]
+        let classname = "some_class"
+        let variable = "variable"
+        let level = 3
+        let result = self.helpers.createArrayCountDef(inClass: classname, forVariable: variable, level: level, backwardsCompatible: false, namespaces: namespaces)
+        XCTAssertEqual("FIRST_NAMESPACE_SECOND_NAMESPACE_THIRD_NAMESPACE_SOME_CLASS_VARIABLE_3_ARRAY_SIZE", result)
+    }
+    
     public func test_createArrayCountDefWithBackwardsCompatibility() {
         let classname = "some_class"
         let variable = "variable"
         let level = 3
         let result = self.helpers.createArrayCountDef(inClass: classname, forVariable: variable, level: level, backwardsCompatible: true)
         XCTAssertEqual("SOME_CLASS_VARIABLE_3_ARRAY_SIZE", result)
+    }
+    
+    public func test_createArrayCountDefWorksWithNamespacesWithBackwardsCompatibility() {
+        let namespaces: [CNamespace] = ["first_namespace", "second_namespace", "third_namespace"]
+        let classname = "some_class"
+        let variable = "variable"
+        let level = 3
+        let result = self.helpers.createArrayCountDef(inClass: classname, forVariable: variable, level: level, backwardsCompatible: true, namespaces: namespaces)
+        XCTAssertEqual("FIRST_NAMESPACE_SECOND_NAMESPACE_THIRD_NAMESPACE_SOME_CLASS_VARIABLE_3_ARRAY_SIZE", result)
     }
     
     public func test_createClassName() {
@@ -318,6 +348,13 @@ public final class WhiteboardHelpersTests: XCTestCase {
         XCTAssertEqual("wb_some_class", result)
     }
     
+    public func test_createStructNameWithNamespaces() {
+        let namespaces: [CNamespace] = ["first_namespace", "second_namespace", "third_namespace"]
+        let classname = "some_class"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false, namespaces: namespaces)
+        XCTAssertEqual("wb_first_namespace_second_namespace_third_namespace_some_class", result)
+    }
+    
     public func test_createStructNameWithNumbers() {
         let classname = "some23_class1"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
@@ -340,6 +377,13 @@ public final class WhiteboardHelpersTests: XCTestCase {
         let classname = "some_class"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
         XCTAssertEqual("wb_some_class", result)
+    }
+    
+    public func test_createStructNameWithNamespacesWithBackwardsCompatibilty() {
+        let namespaces: [CNamespace] = ["first_namespace", "second_namespace", "third_namespace"]
+        let classname = "some_class"
+        let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true, namespaces: namespaces)
+        XCTAssertEqual("wb_first_namespace_second_namespace_third_namespace_some_class", result)
     }
     
     public func test_createStructNameWithNumbersWithBackwardsCompatibility() {
