@@ -56,5 +56,22 @@
  *
  */
 
+/**
+ *  A C style namespace.
+ *
+ *  This namespace must be formatted in snake case with the following form:
+ *  ```
+ *  "my_namespace"
+ *  ```
+ */
 public typealias CNamespace = String
+
+/**
+ *  A C++ style namespace.
+ *
+ *  This namespace must be formatted in camel case with the following form:
+ *  ```
+ *  "MyNamespace"
+ *  ```
+ */
 public typealias CPPNamespace = String
