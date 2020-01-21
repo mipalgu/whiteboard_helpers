@@ -56,8 +56,24 @@
  *
  */
 
+/**
+ *  Provides a structure containing a list of types that are acceptable.
+ *
+ *  This structure allows you to specifiy which types are supported by your
+ *  application.
+ */
 public struct AcceptableTypes: Codable {
+    
+    /**
+     * The list of acceptable types.
+     */
     public let types: [String]
+    
+    /**
+     *  Create a new `AcceptableTypes`.
+     *
+     *  - Parameter types: provide a list of types that you support.
+     */
     public init(types: [String] = [
                 "uint8_t",
                 "int8_t",
