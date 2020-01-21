@@ -60,10 +60,50 @@ import Foundation
 
 import swift_helpers
 
+/**
+ *  Provides a collection of useful naming functions.
+ *
+ *  These collection of functions are provided to create a uniform standard
+ *  between for the names of #defines, structs, classes, and functions that are
+ *  used to generate whiteboard classes.
+ */
 public final class WhiteboardHelpers {
 
+    /**
+     *  A list of possible errors that may be triggered through the use of
+     *  certain functions within this class.
+     */
     public enum ParserErrors: Error {
 
+        /**
+         *  Provides an easy way to access error.
+         *
+         *  This avoids the need to do a switch case over a `ParserErrors`
+         *  everytime an error is thrown. Simply handle the error as follows:
+         *  ```
+         *  do {
+         *      let result = try someFunctionThatThrows()
+         *  } catch let e as WhiteboardHelpers.ParserErrors {
+         *      fatalError(e.message) // Access the message.
+         *  } catch {
+         *      // Some other error is thrown.
+         *  }
+         *  ```
+         */
+        public var message: String {
+            switch self {
+            case .malformedValue(let reason):
+                return reason
+            }
+        }
+        
+        /**
+         *  A value was not formatted correctly.
+         *
+         *  This error is triggered when certain values do not meet their
+         *  specific specifications. A `reason` is provided to explain the
+         *  specific reason for why this error is thrown.
+         */
         case malformedValue(reason: String)
 
     }
@@ -74,15 +114,97 @@ public final class WhiteboardHelpers {
         self.helpers = helpers
     }
 
-    //swiftlint:disable:next line_length
-    public func createArrayCountDef(inClass className: String, forVariable label: String, level: Int, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
+    /**
+     *  Create the #define name for the #define containg the length of a C
+     *  style array.
+     *
+     *  This #define specifies the length of the buffer used in the C style
+     *  description functions.
+     *
+     *  - Parameter className: The name specified in the gen file. This name
+     *  should be formatted as per the classgenerator specification. This name
+     *  is not the C struct name, nor the C++ class name nor the swift wrapper
+     *  name. It is the gen name. For example, the gen 'my_class.gen' would
+     *  result in a name of 'my_class'.
+     *
+     *  - Parameter label: A string containing the array variables label.
+     *
+     *  - Parameter level: The value is used to allow for multi dimensional
+     *  arrays. The level starts at 0 indicating the length of the actual
+     *  array referenced by `label`, and each increment of level indicates the
+     *  length of each inner array. As an example, consider the following array:
+     *  `int myArray[5][3]` The 5 in `myArray` is level 0, whereas the 3 is
+     *  level 1.
+     *
+     *  - Parameter backwardsCompatible: Specifies whether or not to follow the
+     *  naming convention used by the first 'Mick' classgenerator. This should
+     *  only be used for gens that were creating using the old '.txt'. format.
+     *
+     *  - Parameter namespaces: Specify a list of namespaces. These namespaces
+     *  are used to create a unique #define in case the same gen is used
+     *  in multiple different whiteboards that are being accessed by the same
+     *  application. Each version of the gen would then need to exist in it's
+     *  own namespace.
+     *
+     *  - Returns: A unique string representing the #define name for the #define
+     *  containing the length of the array specified by `label` and `level`.
+     *
+     *  - SeeAlso: `createDefName`
+     */
+    public func createArrayCountDef(
+        inClass className: String,
+        forVariable label: String,
+        level: Int,
+        backwardsCompatible: Bool = false,
+        namespaces: [CNamespace]? = nil
+    ) -> String {
         let levelStr = 0 == level ? "" : "_\(level)"
-        let def = self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
+        let def = self.createDefName(
+            forClassNamed: className,
+            backwardsCompatible: backwardsCompatible,
+            namespaces: namespaces
+        )
         return "\(def)_\(label.uppercased())\(levelStr)_ARRAY_SIZE"
     }
 
-    //swiftlint:disable:next line_length
-    public func createArrayCountDef(inClass className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> (String) -> (Int) -> String {
+    /**
+     *  This function creates a helper function that can be used to simply the
+     *  use of `createArrayCountDef(inClass: String, forVariable: String, level: Int, backwardsCompatibly: Bool, namespaces: [CNamespace]?)`.
+     *
+     *  This function simplifies the process of creating a #define name
+     *  for an array by creating a function that only takes the array variables
+     *  label, followed by the level. This way one could call the function
+     *  with the variables label, then make a subsequent call with each level
+     *  that needs to be handled. This effectively allows one to loop over
+     *  all levels without needing to remember all the other details.
+     *
+     *  - Parameter className: The name specified in the gen file. This name
+     *  should be formatted as per the classgenerator specification. This name
+     *  is not the C struct name, nor the C++ class name nor the swift wrapper
+     *  name. It is the gen name. For example, the gen 'my_class.gen' would
+     *  result in a name of 'my_class'.
+     *
+     *  - Parameter backwardsCompatible: Specifies whether or not to follow the
+     *  naming convention used by the first 'Mick' classgenerator. This should
+     *  only be used for gens that were creating using the old '.txt'. format.
+     *
+     *  - Parameter namespaces: Specify a list of namespaces. These namespaces
+     *  are used to create a unique #define in case the same gen is used
+     *  in multiple different whiteboards that are being accessed by the same
+     *  application. Each version of the gen would then need to exist in it's
+     *  own namespace.
+     *
+     *  - Returns: A function which takes the variable label, then returns
+     *  another function which takes a level, which returns the #define
+     *  name.
+     *
+     *  - SeeAlso: `createArrayCountDef(inClass: String, forVariable: String, level: Int, backwardsCompatibly: Bool, namespaces: [CNamespace]?)`
+     */
+    public func createArrayCountDef(
+        inClass className: String,
+        backwardsCompatible: Bool = false,
+        namespaces: [CNamespace]? = nil
+    ) -> (String) -> (Int) -> String {
         return { variable in
             return { level in
                 self.createArrayCountDef(
@@ -108,11 +230,69 @@ public final class WhiteboardHelpers {
         return String(self.helpers.toUpper(first)) + String(camel.dropFirst())
     }
 
-    public func createDefName(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
+    /**
+     *  Create the prefix of a #define.
+     *
+     *  This prefix basically namespaces a specific #define so that is unique
+     *  for a specific class, and optionally, for a specific whiteboard.
+     *
+     *  - Warning: You may use this function if you would like to create
+     *  defines for a specific gen not convered by the other functions provided
+     *  by this class. Generally, you should attempt to use the other functions
+     *  provided in this class before trying to use this function.
+     *
+     *  - Parameter className: The name specified in the gen file. This name
+     *  should be formatted as per the classgenerator specification. This name
+     *  is not the C struct name, nor the C++ class name nor the swift wrapper
+     *  name. It is the gen name. For example, the gen 'my_class.gen' would
+     *  result in a name of 'my_class'.
+     *
+     *  - Parameter backwardsCompatible: Specifies whether or not to follow the
+     *  naming convention used by the first 'Mick' classgenerator. This should
+     *  only be used for gens that were creating using the old '.txt'. format.
+     *
+     *  - Parameter namespaces: Specify a list of namespaces. These namespaces
+     *  are used to create a unique #define in case the same gen is used
+     *  in multiple different whiteboards that are being accessed by the same
+     *  application. Each version of the gen would then need to exist in it's
+     *  own namespace.
+     *
+     *  - Returns: A unique string representing the prefix of a #define.
+     */
+    public func createDefName(
+        forClassNamed className: String,
+        backwardsCompatible: Bool = false,
+        namespaces: [CNamespace]? = nil
+    ) -> String {
         let namespace = namespaces?.reduce("") { $0 + $1 + "_" } ?? ""
         return namespace.uppercased() + className.uppercased()
     }
 
+    /**
+     *  Create the C style struct name for the specified generated class.
+     *
+     *  All struct names generated by this function have a prefix of
+     *  'wb_'. This is to keep all whiteboard structs within the same global
+     *  'wb' namesapce.
+     *
+     *  - Parameter className: The name specified in the gen file. This name
+     *  should be formatted as per the classgenerator specification. This name
+     *  is not the C struct name, nor the C++ class name, nor the swift wrapper
+     *  name. It is the gen name. For example, the gen 'my_class.gen' would
+     *  result in a name of 'my_class'.
+     *
+     *  - Parameter backwardsCompatible: Specifies whether or not to follow the
+     *  naming convention used by the first 'Mick' classgenerator. This should
+     *  only be used for gens that were creating using the old '.txt'. format.
+     *
+     *  - Parameter namespaces: Specify a list of namespaces. These namespaces
+     *  are used to create a unique struct name in case the same gen is used
+     *  in multiple different whiteboards that are being accessed by the same
+     *  application. Each version of the gen would then need to exist in it's
+     *  own namespace.
+     *
+     *  - Returns: The corresponding struct name for the specified class.
+     */
     public func createStructName(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
         let namespace = namespaces?.reduce("") { $0 + $1 + "_" } ?? ""
         if true == backwardsCompatible {
@@ -123,15 +303,83 @@ public final class WhiteboardHelpers {
         })).lowercased()
     }
 
-    //swiftlint:disable:next line_length
-    public func createDescriptionBufferSizeDef(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
-        let defName = self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
+    /**
+     *  Create the #define name for the to_string buffer size.
+     *
+     *  This #define specifies the length of the buffer used in the C style
+     *  description functions.
+     *
+     *  - Parameter className: The name specified in the gen file. This name
+     *  should be formatted as per the classgenerator specification. This name
+     *  is not the C struct name, nor the C++ class name nor the swift wrapper
+     *  name. It is the gen name. For example, the gen 'my_class.gen' would
+     *  result in a name of 'my_class'.
+     *
+     *  - Parameter backwardsCompatible: Specifies whether or not to follow the
+     *  naming convention used by the first 'Mick' classgenerator. This should
+     *  only be used for gens that were creating using the old '.txt'. format.
+     *
+     *  - Parameter namespaces: Specify a list of namespaces. These namespaces
+     *  are used to create a unique #define in case the same gen is used
+     *  in multiple different whiteboards that are being accessed by the same
+     *  application. Each version of the gen would then need to exist in it's
+     *  own namespace.
+     *
+     *  - Returns: A unique string representing the #define name of the
+     *  C style description buffer size.
+     *
+     *  - SeeAlso: `createDefName`
+     */
+    public func createDescriptionBufferSizeDef(
+        forClassNamed className: String,
+        backwardsCompatible: Bool = false,
+        namespaces: [CNamespace]? = nil
+    ) -> String {
+        let defName = self.createDefName(
+            forClassNamed: className,
+            backwardsCompatible: backwardsCompatible,
+            namespaces: namespaces
+        )
         return defName + "_DESC_BUFFER_SIZE"
     }
 
-    //swiftlint:disable:next line_length
-    public func createToStringBufferSizeDef(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
-        let defName = self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
+    /**
+     *  Create the #define name for the to_string buffer size.
+     *
+     *  This #define specifies the length of the buffer used in the C style
+     *  to_string functions.
+     *
+     *  - Parameter className: The name specified in the gen file. This name
+     *  should be formatted as per the classgenerator specification. This name
+     *  is not the C struct name, nor the C++ class name nor the swift wrapper
+     *  name. It is the gen name. For example, the gen 'my_class.gen' would
+     *  result in a name of 'my_class'.
+     *
+     *  - Parameter backwardsCompatible: Specifies whether or not to follow the
+     *  naming convention used by the first 'Mick' classgenerator. This should
+     *  only be used for gens that were creating using the old '.txt'. format.
+     *
+     *  - Parameter namespaces: Specify a list of namespaces. These namespaces
+     *  are used to create a unique #define in case the same gen is used
+     *  in multiple different whiteboards that are being accessed by the same
+     *  application. Each version of the gen would then need to exist in it's
+     *  own namespace.
+     *
+     *  - Returns: A unique string representing the #define name of the
+     *  C style to_string buffer size.
+     *
+     *  - SeeAlso: `createDefName`
+     */
+    public func createToStringBufferSizeDef(
+        forClassNamed className: String,
+        backwardsCompatible: Bool = false,
+        namespaces: [CNamespace]? = nil
+    ) -> String {
+        let defName = self.createDefName(
+            forClassNamed: className,
+            backwardsCompatible: backwardsCompatible,
+            namespaces: namespaces
+        )
         return defName + "_TO_STRING_BUFFER_SIZE"
     }
 
@@ -184,7 +432,9 @@ public final class WhiteboardHelpers {
         if let (index, errorStr) = tuple {
             let pre = "The namespace list '"
             let spaces = String(Array<Character>(repeating: " ", count: pre.count + index))
-            throw ParserErrors.malformedValue(reason: pre + errorStr + "' must only contain letters, numbers and underscores separated by '::'." + "\n" + spaces + "^" + "\n" + spaces + "|")
+            let msg = "' must only contain letters, numbers and underscores separated by '::'."
+            let arrow = "\n" + spaces + "^" + "\n" + spaces + "|"
+            throw ParserErrors.malformedValue(reason: pre + errorStr + msg + arrow)
         }
         return namespaces.map { CNamespace(self.helpers.toSnakeCase(String($0))) }
     }
