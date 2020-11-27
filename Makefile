@@ -1,7 +1,7 @@
 SWIFT=swift
 DIR!=pwd
 
-ALL_TARGETS=test
+ALL_TARGETS=clean test
 
 all:	all-real
 
