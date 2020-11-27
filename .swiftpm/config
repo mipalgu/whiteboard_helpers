@@ -1,0 +1,9 @@
+{
+  "object": [
+    {
+      "mirror": "ssh://git@github.com/mipalgu/swift_helpers.git",
+      "original": "ssh://git.mipal.net/git/swift_helpers.git"
+    }
+  ],
+  "version": 1
+}
