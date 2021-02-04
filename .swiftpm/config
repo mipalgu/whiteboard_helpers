@@ -1,7 +1,7 @@
 {
   "object": [
     {
-      "mirror": "ssh://git.mipal.net/git/swift_helpers.git",
+      "mirror": "ssh://git.mipal.net/Users/Shared/git/swift_helpers.git",
       "original": "ssh://git@github.com/mipalgu/swift_helpers.git"
     }
   ],
