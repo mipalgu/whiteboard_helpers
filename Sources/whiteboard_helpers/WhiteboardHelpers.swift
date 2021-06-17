@@ -223,8 +223,11 @@ public final class WhiteboardHelpers {
         backwardsCompatible: Bool = false,
         namespaces: [CNamespace] = []
     ) -> String {
-        let namespace = namespaces.reduce("") { $0 + $1 + "_" } ?? ""
-        return namespace.uppercased() + className.uppercased()
+        if namespaces.isEmpty {
+            return className.uppercased()
+        }
+        let namespace = namespaces.joined(separator: "_")
+        return namespace.uppercased() + "_" + className.uppercased()
     }
 
     /**
