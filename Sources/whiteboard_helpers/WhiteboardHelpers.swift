@@ -360,7 +360,7 @@ public final class WhiteboardHelpers {
     }
     
     public func includeGuard(forCPPHeader file: String, namespaces: [CPPNamespace]) -> String {
-        let fileName = file.uppercased().replacingOccurrences(of: ".", with: "_")
+        let fileName = self.helpers.toSnakeCase(file).uppercased().replacingOccurrences(of: ".", with: "_")
         if namespaces.isEmpty {
             return fileName
         }
