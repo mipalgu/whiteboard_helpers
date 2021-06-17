@@ -137,36 +137,37 @@ public final class WhiteboardHelpersTests: XCTestCase {
     
     public func test_parsesSingleCNamespace() {
         let namespace = "namespace"
-        let result: [CNamespace]
+        let result: CNamespace
         do {
-            result = try self.helpers.parseNamespaces(namespace)
+            result = try self.helpers.parseCNamespace(namespace)
         } catch let e {
             XCTFail("Unable to parse namespace: \(e).")
             return
         }
-        XCTAssertEqual(["namespace"], result)
+        XCTAssertEqual("namespace", result)
     }
     
     public func test_parsesSingleCNamespaceWithUnderscore() {
         let namespace = "first_namespace"
-        let result: [CNamespace]
+        let result: CNamespace
         do {
-            result = try self.helpers.parseNamespaces(namespace)
+            result = try self.helpers.parseCNamespace(namespace)
         } catch let e {
             XCTFail("Unable to parse namespace: \(e).")
             return
         }
-        XCTAssertEqual(["first_namespace"], result)
+        XCTAssertEqual("first_namespace", result)
     }
     
     public func test_cannotParseNamespaceBeginningWithUnderscore() {
         let namespace = "_namespace"
         do {
-            _ = try self.helpers.parseNamespaces(namespace)
+            _ = try self.helpers.parseCNamespace(namespace)
+            _ = try self.helpers.parseCPPNamespace(namespace)
         } catch let e as WhiteboardHelpers.ParserErrors {
             switch e {
             case .malformedValue(let reason):
-                self.checkErrorMessage(reason, offendingCharacter: "_")
+                XCTAssertEqual(reason, "Must start with a letter.")
                 return
             }
         } catch {
@@ -178,11 +179,12 @@ public final class WhiteboardHelpersTests: XCTestCase {
     public func test_cannotParseNamespaceEndingWithUnderscore() {
         let namespace = "namespace_"
         do {
-            _ = try self.helpers.parseNamespaces(namespace)
+            _ = try self.helpers.parseCNamespace(namespace)
+            _ = try self.helpers.parseCPPNamespace(namespace)
         } catch let e as WhiteboardHelpers.ParserErrors {
             switch e {
             case .malformedValue(let reason):
-                self.checkErrorMessage(reason, offendingCharacter: "_")
+                XCTAssertEqual(reason, "Must not end with an underscore.")
                 return
             }
         } catch {
@@ -194,11 +196,12 @@ public final class WhiteboardHelpersTests: XCTestCase {
     public func test_cannotParseNamespaceContainingUnsupportedSymbols() {
         let namespace = "namesp!ace"
         do {
-            _ = try self.helpers.parseNamespaces(namespace)
+            _ = try self.helpers.parseCNamespace(namespace)
+            _ = try self.helpers.parseCPPNamespace(namespace)
         } catch let e as WhiteboardHelpers.ParserErrors {
             switch e {
             case .malformedValue(let reason):
-                self.checkErrorMessage(reason, offendingCharacter: "!")
+                XCTAssertEqual(reason, "Must only contain letters, numbers and underscores.")
                 return
             }
         } catch {
@@ -208,30 +211,16 @@ public final class WhiteboardHelpersTests: XCTestCase {
     }
     
     public func test_parsesMultipleNamespaces() {
-        let namespace = "first_namespace::second_namespace"
-        let result: [CNamespace]
+        let namespace = "first_namespace:second_namespace"
+        let result: (CNamespace, CPPNamespace)
         do {
-            result = try self.helpers.parseNamespaces(namespace)
+            result = try self.helpers.parseNamespacePair(namespace)
         } catch let e {
             XCTFail("Unable to parse namespace: \(e).")
             return
         }
-        XCTAssertEqual(["first_namespace", "second_namespace"], result)
-    }
-    
-    fileprivate func checkErrorMessage(_ errorMessage: String, offendingCharacter: Character) {
-        let split = errorMessage.split(separator: "\n")
-        guard
-            let (index, _) = errorMessage.enumerated().first(where: { $0.element == offendingCharacter }),
-            let secondLastLine = split.dropLast().last,
-            let lastLine = split.last
-        else {
-            XCTFail("Malformed error message: \(errorMessage).")
-            return
-        }
-        let spaces = String(Array(repeating: " ", count: index))
-        XCTAssertEqual(secondLastLine, spaces + "^")
-        XCTAssertEqual(lastLine, spaces + "|")
+        XCTAssertEqual("first_namespace", result.0)
+        XCTAssertEqual("SecondNamespace", result.1)
     }
     
     public func test_createDefNameOnCName() {

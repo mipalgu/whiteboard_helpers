@@ -309,7 +309,6 @@ public final class WhiteboardHelpers {
     
     // MARK: Generating Struct/Class Names
     
-    
     /**
      *  Create the C++ style class name for the specified generated class.
      *
@@ -424,61 +423,66 @@ public final class WhiteboardHelpers {
         case malformedValue(reason: String)
 
     }
-
-    /**
-     *  Parse a string containing a list of C namespaces separated by '::'.
-     *
-     *  This function is helpful for parsing the namespaces used to namespace
-     *  C struct/functions and the C++ classes used through the whiteboard. The
-     *  global whiteboard has no namespace, however custom whiteboards may
-     *  leverage namespaces to stop conflicting type names between the global
-     *  whiteboard and other custom whiteboards.
-     *
-     *  The String `str` may be formatted in the C++ format, although it is
-     *  recommeded that the c style namespace format be used. In this sense,
-     *  namespaces should be written in lowercase letters separated by
-     *  underscores. To specify separate namespaces separate each namespace
-     *  with '::'. For example:
-     *  ```
-     *  "first_namespace::second_namespace::third_namespace"
-     *  ```
-     *
-     *  - Parameter str: The string containing the C namespaces.
-     *
-     *  - Returns: An array of `CNamespace`s.
-     *
-     *  - Throws: A `WhiteboardHelpers.ParserError` when `str` is malformed.
-     *
-     *  - Complexity: O(n)
-     */
-    public func parseNamespaces(_ str: String) throws -> [CNamespace] {
-        let namespaces = str.components(separatedBy: "::")
-        let check: ((Int, Character)) -> Bool = { (tuple: (Int, Character)) -> Bool in
-            !tuple.1.isASCII || (!tuple.1.isLetter && !tuple.1.isNumber && tuple.1 != "_")
+    
+    public func parseNamespacePair(_ str: String) throws -> (CNamespace, CPPNamespace) {
+        let namespaces = str.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ":")
+        if namespaces.isEmpty {
+            throw ParserErrors.malformedValue(reason: "Must not be empty")
         }
-        let tuple: (Int, String)? = namespaces.reduce(nil) {
-            if nil != $0 {
-                return $0
-            }
-            if $1.first! == "_" {
-                return (0, $1)
-            }
-            if $1.last! == "_" {
-                return ($1.count - 1, $1)
-            }
-            if let (firstIndex, _) = $1.enumerated().first(where: check) {
-                return (firstIndex, $1)
-            }
-            return $0
+        let cNamespaceStr = namespaces[0].trimmingCharacters(in: .whitespacesAndNewlines)
+        if cNamespaceStr.isEmpty {
+            let cppNamespace = try parseCPPNamespace(namespaces[1])
+            return (toCNamespace(cppNamespace: cppNamespace), cppNamespace)
         }
-        if let (index, errorStr) = tuple {
-            let pre = "The namespace list '"
-            let spaces = String(Array<Character>(repeating: " ", count: pre.count + index))
-            let msg = "' must only contain letters, numbers and underscores separated by '::'."
-            let arrow = "\n" + spaces + "^" + "\n" + spaces + "|"
-            throw ParserErrors.malformedValue(reason: pre + errorStr + msg + arrow)
+        let cNamespace = try parseCNamespace(cNamespaceStr)
+        if namespaces.count < 2 {
+            return (cNamespace, toCPPNamespace(cNamespace: cNamespace))
         }
-        return namespaces.map { CNamespace(self.helpers.toSnakeCase(String($0))) }
+        let cppNamespaceStr = namespaces[1].trimmingCharacters(in: .whitespacesAndNewlines)
+        if cppNamespaceStr.isEmpty {
+            return (cNamespace, toCPPNamespace(cNamespace: cNamespace))
+        }
+        let cppNamespace = try parseCPPNamespace(cppNamespaceStr)
+        return (cNamespace, cppNamespace)
+    }
+    
+    public func parseCNamespace(_ str: String) throws -> CNamespace {
+        let namespace = str.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let firstChar = namespace.first, let lastChar = namespace.last else {
+            throw ParserErrors.malformedValue(reason: "Cannot be empty.")
+        }
+        if !firstChar.isLetter {
+            throw ParserErrors.malformedValue(reason: "Must start with a letter.")
+        }
+        if lastChar == "_" {
+            throw ParserErrors.malformedValue(reason: "Must not end with an underscore.")
+        }
+        try namespace.dropFirst().forEach {
+            if !$0.isLetter && !$0.isNumber && $0 != "_" {
+                throw ParserErrors.malformedValue(reason: "Must only contain letters, numbers and underscores.")
+            }
+        }
+        return CNamespace(self.helpers.toSnakeCase(namespace))
+    }
+    
+    public func parseCPPNamespace(_ str: String) throws -> CPPNamespace {
+        let namespace = str.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let firstChar = namespace.first, let lastChar = namespace.last else {
+            throw ParserErrors.malformedValue(reason: "Cannot be empty.")
+        }
+        if !firstChar.isLetter {
+            throw ParserErrors.malformedValue(reason: "Must start with a letter.")
+        }
+        
+        if lastChar == "_" {
+            throw ParserErrors.malformedValue(reason: "Must not end with an underscore.")
+        }
+        try namespace.dropFirst().forEach {
+            if !$0.isLetter && !$0.isNumber && $0 != "_" {
+                throw ParserErrors.malformedValue(reason: "Must only contain letters, numbers and underscores.")
+            }
+        }
+        return CNamespace(self.helpers.toCamelCase(namespace))
     }
 
     /**
