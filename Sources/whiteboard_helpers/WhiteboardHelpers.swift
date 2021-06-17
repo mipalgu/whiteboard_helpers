@@ -531,7 +531,7 @@ public final class WhiteboardHelpers {
             }
         }
         let camelCased = self.helpers.toCamelCase(namespace)
-        let newNamespace = (camelCased.first?.uppercased() ?? "") + String(camelCased.dropFirst())
+        let newNamespace = (camelCased.first?.lowercased() ?? "") + String(camelCased.dropFirst())
         return CNamespace(newNamespace)
     }
     
@@ -573,7 +573,7 @@ public final class WhiteboardHelpers {
      */
     public func toCPPNamespace(cNamespace: CNamespace) -> CPPNamespace {
         let camelCased = self.helpers.toCamelCase(String(cNamespace))
-        let newNamespace = (camelCased.first?.uppercased() ?? "") + String(camelCased.dropFirst())
+        let newNamespace = (camelCased.first?.lowercased() ?? "") + String(camelCased.dropFirst())
         return CPPNamespace(newNamespace)
     }
 
