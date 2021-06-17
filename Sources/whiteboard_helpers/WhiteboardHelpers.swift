@@ -381,7 +381,7 @@ public final class WhiteboardHelpers {
         namespaces: [CPPNamespace] = []
     ) -> String {
         let className = createNamespacedClassName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
-        return className.replacingOccurrences(of: "::", with: "_") + "_DEFINED"
+        return className.replacingOccurrences(of: "::", with: "_") + "_h"
     }
     
     public func createNamespacedClassName(
