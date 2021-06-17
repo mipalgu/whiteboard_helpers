@@ -127,7 +127,7 @@ public final class WhiteboardHelpers {
         forVariable label: String,
         level: Int,
         backwardsCompatible: Bool = false,
-        namespaces: [CNamespace]? = nil
+        namespaces: [CNamespace] = []
     ) -> String {
         let levelStr = 0 == level ? "" : "_\(level)"
         let def = self.createDefName(
@@ -174,7 +174,7 @@ public final class WhiteboardHelpers {
     public func createArrayCountDef(
         inClass className: String,
         backwardsCompatible: Bool = false,
-        namespaces: [CNamespace]? = nil
+        namespaces: [CNamespace] = []
     ) -> (String) -> (Int) -> String {
         return { variable in
             return { level in
@@ -221,9 +221,9 @@ public final class WhiteboardHelpers {
     public func createDefName(
         forClassNamed className: String,
         backwardsCompatible: Bool = false,
-        namespaces: [CNamespace]? = nil
+        namespaces: [CNamespace] = []
     ) -> String {
-        let namespace = namespaces?.reduce("") { $0 + $1 + "_" } ?? ""
+        let namespace = namespaces.reduce("") { $0 + $1 + "_" } ?? ""
         return namespace.uppercased() + className.uppercased()
     }
 
@@ -257,7 +257,7 @@ public final class WhiteboardHelpers {
     public func createDescriptionBufferSizeDef(
         forClassNamed className: String,
         backwardsCompatible: Bool = false,
-        namespaces: [CNamespace]? = nil
+        namespaces: [CNamespace] = []
     ) -> String {
         let defName = self.createDefName(
             forClassNamed: className,
@@ -297,7 +297,7 @@ public final class WhiteboardHelpers {
     public func createToStringBufferSizeDef(
         forClassNamed className: String,
         backwardsCompatible: Bool = false,
-        namespaces: [CNamespace]? = nil
+        namespaces: [CNamespace] = []
     ) -> String {
         let defName = self.createDefName(
             forClassNamed: className,
@@ -346,6 +346,14 @@ public final class WhiteboardHelpers {
             return ""
         }
         return String(self.helpers.toUpper(first)) + String(camel.dropFirst())
+    }
+    
+    public func includeGuard(
+        forClassNamed className: String,
+        backwardsCompatible: Bool = false,
+        namespaces: [CPPNamespace] = []
+    ) -> String {
+        self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces) + "_DEFINED"
     }
     
     public func createNamespacedClassName(
