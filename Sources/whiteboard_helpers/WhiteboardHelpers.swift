@@ -391,6 +391,10 @@ public final class WhiteboardHelpers {
         (namespaces + [CPPNamespace(createClassName(forClassNamed: className, backwardsCompatible: backwardsCompatible))]).joined(separator: "::")
     }
     
+    public func cConversionDefine(forStructNamed structName: String) -> String {
+        return "USE_" + structName.uppercased() + "_C_CONVERSION"
+    }
+    
     /**
      *  Create the C style struct name for the specified generated class.
      *
