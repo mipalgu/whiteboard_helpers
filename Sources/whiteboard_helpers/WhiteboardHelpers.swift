@@ -417,13 +417,14 @@ public final class WhiteboardHelpers {
      *  - Returns: The corresponding struct name for the specified class.
      */
     public func createStructName(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace] = []) -> String {
-        let namespace = namespaces.reduce("") { $0 + $1 + "_" }
+        let namespace = cNamespace(of: namespaces)
         if true == backwardsCompatible {
-            return "wb_" + namespace + className.lowercased()
+            return namespaces.isEmpty ? className.lowercased() : namespace + "_" + className.lowercased()
         }
-        return "wb_" + namespace + self.helpers.toSnakeCase(String(className.lazy.map {
+        let name = self.helpers.toSnakeCase(String(className.lazy.map {
             self.helpers.isAlphaNumeric($0) ? $0 : "_"
         })).lowercased()
+        return namespaces.isEmpty ? name : namespace + "_" + name
     }
     
     // MARK: Namespace Parsing and Manipulation
