@@ -348,6 +348,14 @@ public final class WhiteboardHelpers {
         return String(self.helpers.toUpper(first)) + String(camel.dropFirst())
     }
     
+    public func createNamespacedClassName(
+        forClassNamed className: String,
+        backwardsCompatible: Bool = false,
+        namespaces: [CPPNamespace] = []
+    ) -> String {
+        (namespaces + [CPPNamespace(createClassName(forClassNamed: className, backwardsCompatible: backwardsCompatible))]).joined(separator: "::")
+    }
+    
     /**
      *  Create the C style struct name for the specified generated class.
      *
