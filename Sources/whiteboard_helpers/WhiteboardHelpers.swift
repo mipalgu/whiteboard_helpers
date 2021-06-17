@@ -516,6 +516,14 @@ public final class WhiteboardHelpers {
         }
         return CNamespace(self.helpers.toCamelCase(namespace))
     }
+    
+    public func cNamespace(of namespaces: [CNamespace]) -> String {
+        namespaces.joined(separator: "_")
+    }
+    
+    public func cppNamespace(of namespaces: [CPPNamespace]) -> String {
+        namespaces.joined(separator: "::")
+    }
 
     /**
      *  Convert a `CPPNamespace` to a `CNamespace`.
