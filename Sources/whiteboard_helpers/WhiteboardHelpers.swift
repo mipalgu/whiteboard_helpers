@@ -372,7 +372,7 @@ public final class WhiteboardHelpers {
         backwardsCompatible: Bool = false,
         namespaces: [CNamespace] = []
     ) -> String {
-        self.createStructName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces) + "_h"
+        self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces) + "_DEFINED"
     }
     
     public func cppIncludeGuard(
@@ -380,8 +380,7 @@ public final class WhiteboardHelpers {
         backwardsCompatible: Bool = false,
         namespaces: [CPPNamespace] = []
     ) -> String {
-        let className = createNamespacedClassName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
-        return className.replacingOccurrences(of: "::", with: "_") + "_DEFINED"
+        self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces.map { toCNamespace(cppNamespace: $0) }) + "_DEFINED"
     }
     
     public func createNamespacedClassName(
