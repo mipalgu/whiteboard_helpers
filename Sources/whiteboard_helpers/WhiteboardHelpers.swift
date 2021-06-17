@@ -530,7 +530,9 @@ public final class WhiteboardHelpers {
                 throw ParserErrors.malformedValue(reason: "Must only contain letters, numbers and underscores.")
             }
         }
-        return CNamespace(self.helpers.toCamelCase(namespace))
+        let camelCased = self.helpers.toCamelCase(namespace)
+        let newNamespace = (camelCased.first?.uppercased() ?? "") + String(camelCased.dropFirst())
+        return CNamespace(newNamespace)
     }
     
     public func cNamespace(of namespaces: [CNamespace]) -> String {
@@ -570,7 +572,9 @@ public final class WhiteboardHelpers {
      *  - SeeAlso: `swift_helpers.StringHelpers.toCamelCase(_:)`.
      */
     public func toCPPNamespace(cNamespace: CNamespace) -> CPPNamespace {
-        return CPPNamespace(self.helpers.toCamelCase(String(cNamespace)))
+        let camelCased = self.helpers.toCamelCase(String(cNamespace))
+        let newNamespace = (camelCased.first?.uppercased() ?? "") + String(camelCased.dropFirst())
+        return CPPNamespace(newNamespace)
     }
 
 }
