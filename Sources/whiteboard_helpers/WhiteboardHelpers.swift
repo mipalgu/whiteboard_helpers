@@ -367,12 +367,20 @@ public final class WhiteboardHelpers {
         return namespaces.map { $0.uppercased() }.joined(separator: "_") + "_" + fileName
     }
     
-    public func includeGuard(
+    public func cIncludeGuard(
+        forClassNamed className: String,
+        backwardsCompatible: Bool = false,
+        namespaces: [CNamespace] = []
+    ) -> String {
+        self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces) + "_DEFINED"
+    }
+    
+    public func cppIncludeGuard(
         forClassNamed className: String,
         backwardsCompatible: Bool = false,
         namespaces: [CPPNamespace] = []
     ) -> String {
-        self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces) + "_DEFINED"
+        self.createDefName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces.map { toCNamespace(cppNamespace: $0) }) + "_DEFINED"
     }
     
     public func createNamespacedClassName(
@@ -408,8 +416,8 @@ public final class WhiteboardHelpers {
      *
      *  - Returns: The corresponding struct name for the specified class.
      */
-    public func createStructName(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace]? = nil) -> String {
-        let namespace = namespaces?.reduce("") { $0 + $1 + "_" } ?? ""
+    public func createStructName(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CNamespace] = []) -> String {
+        let namespace = namespaces.reduce("") { $0 + $1 + "_" }
         if true == backwardsCompatible {
             return "wb_" + namespace + className.lowercased()
         }
