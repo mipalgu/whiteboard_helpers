@@ -112,26 +112,26 @@ public final class WhiteboardHelpersTests: XCTestCase {
 
     public func test_point_2D() {
         let name = "point_2D"
-        XCTAssertEqual("wb_point_2d", self.helpers.createStructName(forClassNamed: name))
+        XCTAssertEqual("point_2d", self.helpers.createStructName(forClassNamed: name))
         XCTAssertEqual("Point2D", self.helpers.createClassName(forClassNamed: name))
-        XCTAssertEqual("wb_point_2d", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
+        XCTAssertEqual("point_2d", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
         XCTAssertEqual("point2D", self.helpers.createClassName(forClassNamed: name, backwardsCompatible: true))
     }
 
     public func test_Point_2D_withSpace() {
         let name = "Point_2 D"
-        XCTAssertEqual("wb_point_2_d", self.helpers.createStructName(forClassNamed: name))
+        XCTAssertEqual("point_2_d", self.helpers.createStructName(forClassNamed: name))
         XCTAssertEqual("Point2D", self.helpers.createClassName(forClassNamed: name))
-        XCTAssertEqual("wb_point_2 d", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
+        XCTAssertEqual("point_2 d", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
         XCTAssertEqual("Point2 D", self.helpers.createClassName(forClassNamed: name, backwardsCompatible: true))
     }
 
     public func test_esp() {
         let name = "esp8266_pin_toggle"
-        XCTAssertEqual("wb_esp8266_pin_toggle", self.helpers.createStructName(forClassNamed: name))
+        XCTAssertEqual("esp8266_pin_toggle", self.helpers.createStructName(forClassNamed: name))
         XCTAssertEqual("Esp8266PinToggle", self.helpers.createClassName(forClassNamed: name))
         //swiftlint:disable:next line_length
-        XCTAssertEqual("wb_esp8266_pin_toggle", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
+        XCTAssertEqual("esp8266_pin_toggle", self.helpers.createStructName(forClassNamed: name, backwardsCompatible: true))
         XCTAssertEqual("esp8266PinToggle", self.helpers.createClassName(forClassNamed: name, backwardsCompatible: true))
     }
     
@@ -220,7 +220,7 @@ public final class WhiteboardHelpersTests: XCTestCase {
             return
         }
         XCTAssertEqual("first_namespace", result.0)
-        XCTAssertEqual("SecondNamespace", result.1)
+        XCTAssertEqual("secondNamespace", result.1)
     }
     
     public func test_createDefNameOnCName() {
@@ -334,63 +334,63 @@ public final class WhiteboardHelpersTests: XCTestCase {
     public func test_createStructName() {
         let classname = "some_class"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
-        XCTAssertEqual("wb_some_class", result)
+        XCTAssertEqual("some_class", result)
     }
     
     public func test_createStructNameWithNamespaces() {
         let namespaces: [CNamespace] = ["first_namespace", "second_namespace", "third_namespace"]
         let classname = "some_class"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false, namespaces: namespaces)
-        XCTAssertEqual("wb_first_namespace_second_namespace_third_namespace_some_class", result)
+        XCTAssertEqual("first_namespace_second_namespace_third_namespace_some_class", result)
     }
     
     public func test_createStructNameWithNumbers() {
         let classname = "some23_class1"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
-        XCTAssertEqual("wb_some23_class1", result)
+        XCTAssertEqual("some23_class1", result)
     }
     
     public func test_createStructNameWithNumbersWithoutUnderscores() {
         let classname = "some23class1"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
-        XCTAssertEqual("wb_some23class1", result)
+        XCTAssertEqual("some23class1", result)
     }
     
     public func test_createStructNameWithCamelCase() {
         let classname = "some_ClassName"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: false)
-        XCTAssertEqual("wb_some_class_name", result)
+        XCTAssertEqual("some_class_name", result)
     }
     
     public func test_createStructNameWithBackwardsCompatibility() {
         let classname = "some_class"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
-        XCTAssertEqual("wb_some_class", result)
+        XCTAssertEqual("some_class", result)
     }
     
     public func test_createStructNameWithNamespacesWithBackwardsCompatibilty() {
         let namespaces: [CNamespace] = ["first_namespace", "second_namespace", "third_namespace"]
         let classname = "some_class"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true, namespaces: namespaces)
-        XCTAssertEqual("wb_first_namespace_second_namespace_third_namespace_some_class", result)
+        XCTAssertEqual("first_namespace_second_namespace_third_namespace_some_class", result)
     }
     
     public func test_createStructNameWithNumbersWithBackwardsCompatibility() {
         let classname = "some23_class1"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
-        XCTAssertEqual("wb_some23_class1", result)
+        XCTAssertEqual("some23_class1", result)
     }
     
     public func test_createStructNameWithNumbersWithoutUnderscoresWithBackwardsCompatibility() {
         let classname = "some23class1"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
-        XCTAssertEqual("wb_some23class1", result)
+        XCTAssertEqual("some23class1", result)
     }
     
     public func test_createStructNameWithCamelCaseWithBackwardsCompatibility() {
         let classname = "some_ClassName"
         let result = self.helpers.createStructName(forClassNamed: classname, backwardsCompatible: true)
-        XCTAssertEqual("wb_some_classname", result)
+        XCTAssertEqual("some_classname", result)
     }
     
     public func test_createDescriptionBufferSizeDef() {
