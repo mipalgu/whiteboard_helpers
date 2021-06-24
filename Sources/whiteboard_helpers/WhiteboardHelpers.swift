@@ -385,6 +385,11 @@ public final class WhiteboardHelpers {
         return name.replacingOccurrences(of: "::", with: "_") + "_h"
     }
     
+    public func cppDefinedDef(forClassNamed className: String, backwardsCompatible: Bool = false, namespaces: [CPPNamespace] = []) -> String {
+        let name = self.createNamespacedClassName(forClassNamed: className, backwardsCompatible: backwardsCompatible, namespaces: namespaces)
+        return name.replacingOccurrences(of: "::", with: "_") + "_DEFINED"
+    }
+    
     public func createNamespacedClassName(
         forClassNamed className: String,
         backwardsCompatible: Bool = false,
