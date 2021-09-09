@@ -11,7 +11,7 @@ let package = Package(
             targets: ["whiteboard_helpers"])
     ],
     dependencies: [
-        .package(url: "https://github.com/mipalgu/swift_helpers.git", .branch("master"))
+        .package(url: "https://github.com/mipalgu/swift_helpers.git", .branch("main"))
     ],
     targets: [
         .target(
